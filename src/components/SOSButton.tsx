@@ -70,6 +70,7 @@ export function SOSButton() {
 
       {/* Main Button */}
       <motion.button
+        id="btn-sos"
         animate={controls}
         onPointerDown={startPress}
         onPointerUp={endPress}

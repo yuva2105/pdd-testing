@@ -34,6 +34,7 @@ export function FakeCallScreen() {
         {callState === 'incoming' ?
         <div className="w-full flex justify-between px-8 mt-auto absolute bottom-24">
             <button
+            id="btn-fakecall-decline"
             onClick={endCall}
             className="flex flex-col items-center gap-2">
             
@@ -47,6 +48,7 @@ export function FakeCallScreen() {
               <span className="text-white text-sm">Decline</span>
             </button>
             <button
+            id="btn-fakecall-accept"
             onClick={() => setCallState('active')}
             className="flex flex-col items-center gap-2">
             
@@ -95,6 +97,7 @@ export function FakeCallScreen() {
             )}
             </div>
             <button
+            id="btn-fakecall-end"
             onClick={endCall}
             className="w-[72px] h-[72px] rounded-full bg-[#FF3B30] flex items-center justify-center">
             

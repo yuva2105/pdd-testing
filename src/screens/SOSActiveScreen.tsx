@@ -118,6 +118,7 @@ export function SOSActiveScreen() {
 
         {/* Cancel Button */}
         <button
+          id="btn-cancel-sos"
           onClick={cancelSOS}
           className="w-full h-16 bg-white text-brand-redDark rounded-2xl font-bold text-lg flex items-center justify-center gap-2 active:scale-95 transition-transform shadow-xl">
           

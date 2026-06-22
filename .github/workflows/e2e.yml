@@ -1,0 +1,257 @@
+name: CI/CD E2E Testing Suite
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+# Grant permissions needed to publish to GitHub Pages
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  # 1. Selenium Website Tests (400 Cases)
+  selenium-tests:
+    name: Selenium - Website Tests (400)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Selenium Web Tests
+        run: npx tsx tests/runAll.ts --suite selenium
+
+      - name: Upload Selenium Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: selenium-web-report
+          path: tests/reports/selenium-web-report.xlsx
+
+  # 2. Appium Android Tests (400 Cases)
+  appium-tests:
+    name: Appium - Android Tests (400)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Appium Tests
+        run: npx tsx tests/runAll.ts --suite appium
+
+      - name: Upload Appium Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: appium-android-report
+          path: tests/reports/appium-android-report.xlsx
+
+  # 3. Unit Tests - API (400 Cases)
+  unit-tests:
+    name: Unit Tests - API (400)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Unit Tests
+        run: npx tsx tests/runAll.ts --suite unit
+
+      - name: Upload Unit Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-report
+          path: tests/reports/unit-test-report.xlsx
+
+  # 4. Validation Tests (400 Cases)
+  validation-tests:
+    name: Validation Tests (400)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Validation Tests
+        run: npx tsx tests/runAll.ts --suite validation
+
+      - name: Upload Validation Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-test-report
+          path: tests/reports/validation-test-report.xlsx
+
+  # 5. Deployment Status (400 Cases)
+  deployment-tests:
+    name: Deployment Status (400)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Deployment Tests
+        run: npx tsx tests/runAll.ts --suite deployment
+
+      - name: Upload Deployment Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-test-report
+          path: tests/reports/deployment-test-report.xlsx
+
+  # 6. Load Testing - Performance (400 Cases)
+  load-tests:
+    name: Load Testing - Performance (400)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Load Tests
+        run: npx tsx tests/runAll.ts --suite load
+
+      - name: Upload Load Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: load-test-report
+          path: tests/reports/load-test-report.xlsx
+
+  # 7. Compile Master Report & Deploy
+  compile-master-report:
+    name: Compile Master Report & Deploy
+    runs-on: ubuntu-latest
+    needs:
+      - selenium-tests
+      - appium-tests
+      - unit-tests
+      - validation-tests
+      - deployment-tests
+      - load-tests
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create Reports Directory
+        run: mkdir -p tests/reports
+
+      # Download all E2E reports from previous jobs
+      - name: Download Selenium Report
+        uses: actions/download-artifact@v4
+        with:
+          name: selenium-web-report
+          path: tests/reports
+
+      - name: Download Appium Report
+        uses: actions/download-artifact@v4
+        with:
+          name: appium-android-report
+          path: tests/reports
+
+      - name: Download Unit Report
+        uses: actions/download-artifact@v4
+        with:
+          name: unit-test-report
+          path: tests/reports
+
+      - name: Download Validation Report
+        uses: actions/download-artifact@v4
+        with:
+          name: validation-test-report
+          path: tests/reports
+
+      - name: Download Deployment Report
+        uses: actions/download-artifact@v4
+        with:
+          name: deployment-test-report
+          path: tests/reports
+
+      - name: Download Load Report
+        uses: actions/download-artifact@v4
+        with:
+          name: load-test-report
+          path: tests/reports
+
+      # Merge individual sheets into the consolidated report & generate HTML
+      - name: Merge Reports & Build HTML Dashboard
+        run: npx tsx tests/utils/mergeReports.ts
+
+      # Upload completed master spreadsheet artifact (full-e2e-report)
+      - name: Upload Master Report Excel Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-e2e-report
+          path: dist-test/full-e2e-report.xlsx
+
+      # Upload static site contents as GitHub Pages artifact
+      - name: Upload HTML Pages Site Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist-test/
+
+      # Deploy HTML Pages artifact directly to GitHub Pages hosting
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

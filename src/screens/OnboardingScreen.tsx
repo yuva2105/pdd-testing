@@ -46,6 +46,7 @@ export function OnboardingScreen() {
   return (
     <div className="w-full h-full flex flex-col bg-brand-dark pt-20 pb-10 px-6 relative">
       <button
+        id="btn-onboarding-skip"
         onClick={() => setScreen('Auth')}
         className="absolute top-14 right-6 text-white/50 font-medium text-sm">
         
@@ -106,6 +107,7 @@ export function OnboardingScreen() {
         </div>
 
         <button
+          id="btn-onboarding-next"
           onClick={nextSlide}
           className="w-full h-14 bg-white text-black rounded-2xl font-semibold text-lg flex items-center justify-center gap-2 active:scale-95 transition-transform">
           

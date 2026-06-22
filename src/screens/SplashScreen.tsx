@@ -11,7 +11,10 @@ export function SplashScreen() {
     return () => clearTimeout(timer);
   }, [setScreen]);
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center bg-brand-dark relative overflow-hidden">
+    <div
+      id="splash-screen"
+      onClick={() => setScreen('Onboarding')}
+      className="w-full h-full flex flex-col items-center justify-center bg-brand-dark relative overflow-hidden cursor-pointer">
       {/* Background Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-brand-red/20 rounded-full blur-[80px]"></div>
 

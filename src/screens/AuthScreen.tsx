@@ -49,6 +49,7 @@ export function AuthScreen() {
             <Mail size={20} className="text-white/40" />
           </div>
           <input
+            id="input-email"
             type="email"
             placeholder="Email Address"
             className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 text-white placeholder:text-white/30 focus:outline-none focus:border-brand-red/50 focus:bg-white/10 transition-all"
@@ -62,6 +63,7 @@ export function AuthScreen() {
             <Lock size={20} className="text-white/40" />
           </div>
           <input
+            id="input-password"
             type="password"
             placeholder="Password"
             className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 text-white placeholder:text-white/30 focus:outline-none focus:border-brand-red/50 focus:bg-white/10 transition-all"
@@ -73,6 +75,7 @@ export function AuthScreen() {
         {isLogin &&
         <div className="flex justify-end">
             <button
+            id="btn-forgot-password"
             type="button"
             className="text-sm text-brand-red font-medium">
             
@@ -82,6 +85,7 @@ export function AuthScreen() {
         }
 
         <button
+          id="btn-auth-submit"
           type="submit"
           className="w-full h-14 bg-brand-red hover:bg-brand-redDark text-white rounded-2xl font-semibold text-lg flex items-center justify-center gap-2 mt-4 transition-colors shadow-[0_4px_20px_rgba(255,45,85,0.4)]">
           
@@ -97,6 +101,7 @@ export function AuthScreen() {
       </div>
 
       <button
+        id="btn-google-auth"
         type="button"
         className="w-full h-14 bg-white text-black rounded-2xl font-semibold text-base flex items-center justify-center gap-3 mt-8 active:scale-95 transition-transform">
         
@@ -125,6 +130,7 @@ export function AuthScreen() {
         <p className="text-white/50 text-sm">
           {isLogin ? "Don't have an account? " : 'Already have an account? '}
           <button
+            id="btn-toggle-auth"
             onClick={() => setIsLogin(!isLogin)}
             className="text-brand-red font-medium hover:underline">
             

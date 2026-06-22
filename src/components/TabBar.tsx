@@ -52,6 +52,7 @@ export function TabBar() {
         const isActive = currentTab === tab.id;
         return (
           <button
+            id={`tab-${tab.id.toLowerCase()}`}
             key={tab.id}
             onClick={() => handleTabPress(tab)}
             className="relative flex flex-col items-center justify-center w-12 h-12">
