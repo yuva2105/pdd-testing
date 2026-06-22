@@ -1,4 +1,4 @@
-import * as XLSX from 'xlsx';
+import * as XLSXNamespace from 'xlsx';
 import * as fs from 'fs';
 import * as path from 'path';
 import { TestResult } from '../unit/storeTests';
@@ -12,6 +12,8 @@ import { runAppiumTests } from '../appium/mobileTests';
 import { runValidationTests } from '../validation/validationTests';
 import { runDeploymentTests } from '../deployment/deploymentTests';
 import { runLoadTests } from '../load/loadTests';
+
+const XLSX = (XLSXNamespace as any).default || XLSXNamespace;
 
 function readDetailsFromExcel(filePath: string): TestResult[] {
   if (!fs.existsSync(filePath)) {

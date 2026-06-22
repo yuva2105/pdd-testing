@@ -234,6 +234,16 @@ jobs:
           name: load-test-report
           path: tests/reports
 
+      # Move files from subdirectories to tests/reports/
+      - name: Organize report files
+        run: |
+          mv tests/reports/selenium-web-report/*.xlsx tests/reports/ || true
+          mv tests/reports/appium-android-report/*.xlsx tests/reports/ || true
+          mv tests/reports/unit-test-report/*.xlsx tests/reports/ || true
+          mv tests/reports/validation-test-report/*.xlsx tests/reports/ || true
+          mv tests/reports/deployment-test-report/*.xlsx tests/reports/ || true
+          mv tests/reports/load-test-report/*.xlsx tests/reports/ || true
+
       # Merge individual sheets into the consolidated report & generate HTML
       - name: Merge Reports & Build HTML Dashboard
         run: npx tsx tests/utils/mergeReports.ts
@@ -255,3 +265,4 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        continue-on-error: true

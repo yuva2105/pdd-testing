@@ -1,7 +1,9 @@
-import * as XLSX from 'xlsx';
+import * as XLSXNamespace from 'xlsx';
 import * as fs from 'fs';
 import * as path from 'path';
 import { TestResult } from '../unit/storeTests';
+
+const XLSX = (XLSXNamespace as any).default || XLSXNamespace;
 
 export function generateExcelReports(
   unitResults: TestResult[],
