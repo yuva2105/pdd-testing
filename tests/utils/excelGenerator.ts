@@ -13,15 +13,12 @@ export function generateExcelReports(
   deploymentResults: TestResult[],
   loadResults: TestResult[]
 ) {
-  // Use process.cwd() instead of __dirname to avoid ES modules errors
   const reportsDir = path.join(process.cwd(), 'tests/reports');
 
-  // Create directory if it doesn't exist
   if (!fs.existsSync(reportsDir)) {
     fs.mkdirSync(reportsDir, { recursive: true });
   }
 
-  // Helper to write a single category workbook
   const writeCategoryReport = (
     filename: string,
     title: string,
@@ -29,45 +26,44 @@ export function generateExcelReports(
     categoryLabel: string
   ) => {
     const workbook = XLSX.utils.book_new();
-
     const total = results.length;
     const passed = results.filter(r => r.status === 'PASS').length;
     const failed = results.filter(r => r.status === 'FAIL').length;
     const passRate = total > 0 ? `${((passed / total) * 100).toFixed(1)}%` : '0%';
     const deployableStatus = failed === 0 ? 'DEPLOYABLE (PASSING ALL)' : 'DO NOT DEPLOY';
 
-    // Summary Page
+    // Summary Page (Column A empty)
     const summaryData = [
-      [title],
-      ['Generated on:', new Date().toLocaleString()],
+      ['', title],
+      ['', 'Generated on:', new Date().toLocaleString('en-US')],
       [],
-      ['EXECUTION SUMMARY'],
-      ['Metric', 'Value'],
-      ['Total Test Cases', total],
-      ['Passed Tests', passed],
-      ['Failed Tests', failed],
-      ['Pass Rate', passRate],
-      ['Deployable Status', deployableStatus],
+      ['', 'EXECUTION SUMMARY'],
+      ['', 'Metric', 'Value'],
+      ['', 'Total Test Cases', total],
+      ['', 'Passed Tests', passed],
+      ['', 'Failed Tests', failed],
+      ['', 'Pass Rate', passRate],
+      ['', 'Deployable Status', deployableStatus],
       [],
-      ['TEST CATEGORY SUMMARY'],
-      ['Category', 'Count', 'Passed', 'Failed'],
-      [categoryLabel, total, passed, failed]
+      ['', 'TEST CATEGORY SUMMARY'],
+      ['', 'Category', 'Count', 'Passed', 'Failed'],
+      ['', categoryLabel, total, passed, failed]
     ];
 
     const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
     XLSX.utils.book_append_sheet(workbook, summarySheet, 'Dashboard');
 
-    // Details Page
-    const detailsHeaders = ['Test ID', 'Category', 'Description', 'Test Type', 'Expected Result', 'Actual Result', 'Status', 'Time (ms)'];
+    // Details Page (Column A empty, Columns B-G)
+    const detailsHeaders = ['', 'Test Suite', 'Category', 'Test Case', 'Status', 'Error Detail', 'Timestamp'];
+    const timestampStr = new Date().toLocaleString('en-US');
     const detailsRows = results.map(r => [
-      r.id,
-      r.category,
-      r.description,
+      '',
+      categoryLabel,
       r.type,
-      r.expected,
-      r.actual,
+      `${r.id}: ${r.id}: ${r.description}`,
       r.status,
-      r.executionTimeMs
+      r.status === 'FAIL' ? r.actual : '',
+      timestampStr
     ]);
 
     const detailsSheet = XLSX.utils.aoa_to_sheet([detailsHeaders, ...detailsRows]);
@@ -78,7 +74,7 @@ export function generateExcelReports(
     console.log(`Individual report generated successfully at: ${filePath}`);
   };
 
-  // 1. Write individual reports
+  // 1. Write individual reports matching the exact screenshot names
   writeCategoryReport('unit-test-report.xlsx', 'AstraSafe Safety Platform - Unit Tests API', unitResults, 'Unit Tests - API');
   writeCategoryReport('selenium-web-report.xlsx', 'AstraSafe Safety Platform - Selenium Website Tests', seleniumResults, 'Selenium - Website Tests');
   writeCategoryReport('appium-android-report.xlsx', 'AstraSafe Safety Platform - Appium Android Tests', appiumResults, 'Appium - Android Tests');
@@ -104,52 +100,51 @@ export function generateExcelReports(
   const deployableStatusMaster = failedMaster === 0 ? 'DEPLOYABLE (PASSING ALL SUITES)' : 'DO NOT DEPLOY (BLOCKED BY FAILURES)';
 
   const masterSummaryData = [
-    ['AstraSafe Safety Platform - Consolidated Master Report'],
-    ['Generated on:', new Date().toLocaleString()],
+    ['', 'AstraSafe Safety Platform - Consolidated Master Report'],
+    ['', 'Generated on:', new Date().toLocaleString('en-US')],
     [],
-    ['CONSOLIDATED EXECUTION SUMMARY'],
-    ['Metric', 'Value'],
-    ['Total Test Cases', totalMaster],
-    ['Passed Tests', passedMaster],
-    ['Failed Tests', failedMaster],
-    ['Pass Rate', passRateMaster],
-    ['Deployable Status', deployableStatusMaster],
+    ['', 'CONSOLIDATED EXECUTION SUMMARY'],
+    ['', 'Metric', 'Value'],
+    ['', 'Total Test Cases', totalMaster],
+    ['', 'Passed Tests', passedMaster],
+    ['', 'Failed Tests', failedMaster],
+    ['', 'Pass Rate', passRateMaster],
+    ['', 'Deployable Status', deployableStatusMaster],
     [],
-    ['TEST SUITES SUMMARY'],
-    ['Category', 'Count', 'Passed', 'Failed'],
-    ['Unit Tests - API', unitResults.length, unitResults.filter(r => r.status === 'PASS').length, unitResults.filter(r => r.status === 'FAIL').length],
-    ['Selenium - Website Tests', seleniumResults.length, seleniumResults.filter(r => r.status === 'PASS').length, seleniumResults.filter(r => r.status === 'FAIL').length],
-    ['Appium - Android Tests', appiumResults.length, appiumResults.filter(r => r.status === 'PASS').length, appiumResults.filter(r => r.status === 'FAIL').length],
-    ['Validation Tests', validationResults.length, validationResults.filter(r => r.status === 'PASS').length, validationResults.filter(r => r.status === 'FAIL').length],
-    ['Deployment Status', deploymentResults.length, deploymentResults.filter(r => r.status === 'PASS').length, deploymentResults.filter(r => r.status === 'FAIL').length],
-    ['Load Testing - Performance', loadResults.length, loadResults.filter(r => r.status === 'PASS').length, loadResults.filter(r => r.status === 'FAIL').length],
+    ['', 'TEST SUITES SUMMARY'],
+    ['', 'Category', 'Count', 'Passed', 'Failed'],
+    ['', 'Unit Tests - API', unitResults.length, unitResults.filter(r => r.status === 'PASS').length, unitResults.filter(r => r.status === 'FAIL').length],
+    ['', 'Selenium - Website Tests', seleniumResults.length, seleniumResults.filter(r => r.status === 'PASS').length, seleniumResults.filter(r => r.status === 'FAIL').length],
+    ['', 'Appium - Android Tests', appiumResults.length, appiumResults.filter(r => r.status === 'PASS').length, appiumResults.filter(r => r.status === 'FAIL').length],
+    ['', 'Validation Tests', validationResults.length, validationResults.filter(r => r.status === 'PASS').length, validationResults.filter(r => r.status === 'FAIL').length],
+    ['', 'Deployment Status', deploymentResults.length, deploymentResults.filter(r => r.status === 'PASS').length, deploymentResults.filter(r => r.status === 'FAIL').length],
+    ['', 'Load Testing - Performance', loadResults.length, loadResults.filter(r => r.status === 'PASS').length, loadResults.filter(r => r.status === 'FAIL').length],
   ];
 
   const masterSummarySheet = XLSX.utils.aoa_to_sheet(masterSummaryData);
   XLSX.utils.book_append_sheet(masterWorkbook, masterSummarySheet, 'Master Dashboard');
 
-  // Add individual tabs for details
-  const createDetailsSheet = (results: TestResult[]) => {
-    const detailsHeaders = ['Test ID', 'Category', 'Description', 'Test Type', 'Expected Result', 'Actual Result', 'Status', 'Time (ms)'];
+  const createDetailsSheet = (results: TestResult[], categoryLabel: string) => {
+    const detailsHeaders = ['', 'Test Suite', 'Category', 'Test Case', 'Status', 'Error Detail', 'Timestamp'];
+    const timestampStr = new Date().toLocaleString('en-US');
     const detailsRows = results.map(r => [
-      r.id,
-      r.category,
-      r.description,
+      '',
+      categoryLabel,
       r.type,
-      r.expected,
-      r.actual,
+      `${r.id}: ${r.id}: ${r.description}`,
       r.status,
-      r.executionTimeMs
+      r.status === 'FAIL' ? r.actual : '',
+      timestampStr
     ]);
     return XLSX.utils.aoa_to_sheet([detailsHeaders, ...detailsRows]);
   };
 
-  XLSX.utils.book_append_sheet(masterWorkbook, createDetailsSheet(unitResults), 'Unit Details');
-  XLSX.utils.book_append_sheet(masterWorkbook, createDetailsSheet(seleniumResults), 'Selenium Details');
-  XLSX.utils.book_append_sheet(masterWorkbook, createDetailsSheet(appiumResults), 'Appium Details');
-  XLSX.utils.book_append_sheet(masterWorkbook, createDetailsSheet(validationResults), 'Validation Details');
-  XLSX.utils.book_append_sheet(masterWorkbook, createDetailsSheet(deploymentResults), 'Deployment Details');
-  XLSX.utils.book_append_sheet(masterWorkbook, createDetailsSheet(loadResults), 'Load Details');
+  XLSX.utils.book_append_sheet(masterWorkbook, createDetailsSheet(unitResults, 'Unit Tests - API'), 'Unit Details');
+  XLSX.utils.book_append_sheet(masterWorkbook, createDetailsSheet(seleniumResults, 'Selenium - Website Tests'), 'Selenium Details');
+  XLSX.utils.book_append_sheet(masterWorkbook, createDetailsSheet(appiumResults, 'Appium - Android Tests'), 'Appium Details');
+  XLSX.utils.book_append_sheet(masterWorkbook, createDetailsSheet(validationResults, 'Validation Tests'), 'Validation Details');
+  XLSX.utils.book_append_sheet(masterWorkbook, createDetailsSheet(deploymentResults, 'Deployment Status'), 'Deployment Details');
+  XLSX.utils.book_append_sheet(masterWorkbook, createDetailsSheet(loadResults, 'Load Testing - Performance'), 'Load Details');
 
   const masterFilePath = path.join(reportsDir, 'full-e2e-report.xlsx');
   XLSX.writeFile(masterWorkbook, masterFilePath);

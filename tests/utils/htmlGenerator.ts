@@ -472,25 +472,23 @@ export function generateHtmlDashboard(
         <table>
           <thead>
             <tr>
-              <th style="width: 100px;">Test ID</th>
-              <th style="width: 180px;">Category</th>
-              <th>Description</th>
-              <th style="width: 120px;">Type</th>
-              <th style="width: 250px;">Expected</th>
-              <th style="width: 250px;">Actual</th>
+              <th style="width: 180px;">Test Suite</th>
+              <th style="width: 120px;">Category</th>
+              <th>Test Case</th>
               <th style="width: 100px;">Status</th>
+              <th>Error Detail</th>
+              <th style="width: 180px;">Timestamp</th>
             </tr>
           </thead>
           <tbody id="testTableBody">
             ${allResults.slice(0, 500).map(r => `
             <tr>
-              <td><strong>${r.id}</strong></td>
-              <td>${r.category}</td>
-              <td>${r.description}</td>
+              <td><strong>${r.category}</strong></td>
               <td>${r.type}</td>
-              <td>${r.expected}</td>
-              <td>${r.actual}</td>
+              <td>${r.id}: ${r.id}: ${r.description}</td>
               <td><span class="status-badge ${r.status.toLowerCase()}">${r.status}</span></td>
+              <td>${r.status === 'FAIL' ? r.actual : ''}</td>
+              <td>${new Date().toLocaleString('en-US')}</td>
             </tr>
             `).join('')}
           </tbody>
