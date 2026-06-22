@@ -81,7 +81,7 @@ async function main() {
   console.log('\nGenerating final consolidated Master E2E Excel and HTML reports...');
   try {
     // Regenerate individual files (if they were missing) and compile master sheet
-    generateExcelReports(
+    await generateExcelReports(
       results.unit,
       results.selenium,
       results.appium,

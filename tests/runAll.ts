@@ -104,7 +104,7 @@ async function main() {
   // Generate output files
   console.log('\nCompiling results and generating Excel analysis reports...');
   try {
-    generateExcelReports(
+    await generateExcelReports(
       unitResults,
       seleniumResults,
       appiumResults,
